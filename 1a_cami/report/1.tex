@@ -1,0 +1,166 @@
+% State which task(s) you have solved.
+I have solved all three tasks.
+\section*{Task 1: Ternary numbers}
+% Shortly outline the structure of your code to make it comprehensible for your TA.
+% Explain which registers you use and for what, and likewise if you use any
+% memory (like the stack).
+\t{Structure and register use} -
+I have structured the code in \texttt{ternary.asm} into 7 "sections" each with
+its own label:
+%\begin{itemize}
+%    \item
+The instruction in \texttt{ternary\_convert} sets up the initial result in
+\texttt{rax}, being 0.
+%\item
+
+    At \texttt{read\_char} a single byte from the adress that the argument of
+    \texttt{ternary\_convert}
+    points to (\texttt{[rdi]}) is moved into
+    register \texttt{r8b}. The argument type is \texttt{char*}, thus
+    \texttt{r8b} is used.
+    Then the pointer is advanced, by incrementing \texttt{rdi}, so the next
+    ascii character can be read later on.
+
+%\item
+    The instructions after label \texttt{calculate} checks the validity of the
+    character in \texttt{r8b}. If it is valid it has value 97, 98, 99 or is a
+    terminating NUL of value 0. If it is NUL
+    we jump to label \texttt{done}, which returns.
+    Otherwise the current result in \texttt{rax} is multiplied by 3. I.e. if ternary
+    string \texttt{"bacacc"} is given, the first char \texttt{'b'} represents
+    $1\times 3^5$, so if we multiply \texttt{'b'}'s base value with 3 each time we
+    have read a new character in the string we end up multiplying the value
+    with 3 five times, being $3^5$. So the base value is added to \texttt{rax},
+    and then multiplied by 3 when the next character has been read.
+
+    If an \texttt{'a'} is encountered (\texttt{r8b} and 97 are equal) we
+    jump back and read the next character. Because \texttt{'a'} has
+    base value 0 we do not need to add to the final result, we just multiply
+    by 3. By no means, we could have instruction \texttt{add rax, 0}, but it
+    would not change the final result.
+
+    If the char is invalid, being less than 97 or greater than 99 we jump to
+    label \texttt{ternary\_invalid}, where 0 is moved to \texttt{rax}
+    and control is returned to the caller of
+    \texttt{ternary\_convert}.
+
+%\item
+    If an \texttt{'b'} is encountered we jump to label \texttt{b}, add 1 to \texttt{rax} and jump
+    back and reads the next character. The same goes for \texttt{'c'} and label
+    \texttt{c}, but
+    with value 2.
+%\end{itemize}
+
+% Explain which challenges you encountered and what you did to overcome them.
+\t{Challenges} - First I implemented the solution by pushing the base values of
+characters encountered, and when the full string was parsed, I
+popped them off. I forgot the characters were now received in reversed order,
+which caused a lot of lost time for me. It was cumbersome, but doable. Then I realised the
+multiply by 3 trick and implemented it in no time.
+
+% Explain how you have tested your code (or why you haven’t tested it).
+\t{Tests} - I did test driven development through all three tasks. So I
+made \texttt{ternary\_main.c} which uses the function.  I printed the
+interpretation of different ternary numbers of different
+combinations and length to \texttt{stdout}. This was possible by linking my
+assembly- and \texttt{C} file.
+
+\section*{Task 2: Grab line}
+% Shortly outline the structure of your code to make it comprehensible for your TA.
+% Explain which registers you use and for what, and likewise if you use any
+% memory (like the stack).
+\t{Structure and register use} -
+%\begin{itemize}
+    %\item
+The entry point and first label
+\texttt{grabline} has the non-volatile registers used set up, both gets initial
+value 0.  \texttt{r12} is a counter, keeping track of number of characters
+read, also used for buffer offset.  \texttt{r13} is a flag, that gets set to 1
+if a newline is read by the extern function \texttt{fgetc}.
+%\item
+    \texttt{read\_and\_handle\_char} does what its name implies.
+    \texttt{fgetc} is called and returns the value, represented as an
+    \texttt{Integer}, of the character read in register \texttt{eax}, and -1 if
+    eof. If a newline, eof or 126 characters is read the control flow is
+    changed to label \texttt{newline}, \texttt{eof} or \texttt{done}.
+
+    Since we have to write the line of text, character by character and thus
+    byte by byte, to a buffer the register \texttt{al} is used. The pointer to
+    the buffer is placed in \texttt{rsi}, so writing to it is done using
+    instruction \texttt{mov [rsi + r12], al}. We add the offset to the adress,
+    follow the pointer, and moves the byte sized value in \texttt{al} here to.
+
+%\item
+    The instructions after \texttt{eof} and \texttt{done} writes newline
+    and NUL to the buffer, calculates the final number of bytes read and
+    stores it in \texttt{rax}, pops the non-volatile registers used and
+    returns.
+%\end{itemize}
+
+% Explain which challenges you encountered and what you did to overcome them.
+\t{Challenges} - It took some time before I figured out to use \texttt{eax} for
+the return value of \texttt{rax}. I reread \texttt{man 3 fgetc} and noticed the
+\texttt{int} return value.
+
+Further more I somehow missed to write character 127 to the buffer. I had to
+move the comparison of the \texttt{r12, 126} to the beginning of the loop to
+solve it.\label{chl}
+
+% Explain how you have tested your code (or why you haven’t tested it).
+\t{Tests} -
+I linked my assembly with \texttt{main\_grabline.c} in which I
+called \texttt{grabline(FILE*, char*)} passing it a text file to read from and
+a buffer of size 128 to write to. The text files I made was designed to test
+different aspects of \texttt{grabline}. I.e. one contains
+\texttt{"abcd\textbackslash NUL"}
+another \texttt{"abcd\textbackslash n\textbackslash NUL"}, one was empty and another was more than 126
+characters long.
+
+\section*{Task 3: Reverse file}
+% Shortly outline the structure of your code to make it comprehensible for your TA.
+% Explain which registers you use and for what, and likewise if you use any
+% memory (like the stack).
+\t{Structure and register use} - At label \texttt{reverse\_file} I use
+non-volatile registers \texttt{r12, r13, r14}. The first for storing
+\texttt{FILE* inp}, second for \texttt{FILE*
+out} and the third for a line counter, so I do not have to push and pop
+volatile registers everytime I call a function.
+
+Then the stack is used as the buffer argument for \texttt{grabline}, which is
+the first extern function to be called. I allocate 128
+bytes for \texttt{grabline} and then I substract another 8 bytes to ensure
+stack alignment, since three registers initially are pushed on the stack.
+\texttt{grabline}'s return value is stored in register \texttt{rax}, if this is 0
+there was nothing to read, and we jump to label \texttt{done} where the
+stack space is freed, we pop to the callee save registers and return. If it was
+not 0 we fall through to label \texttt{recur}, which recursively calls
+\texttt{reverse\_file}. This call's return value is the number of lines read,
+so this is added to register \texttt{r14}.
+
+At next label \texttt{write\_line} the call to \texttt{fputs(const char* buf,
+FILE* out)} is set up. The stack pointer \texttt{rsp} is passed in
+\texttt{rdi}, and \texttt{r13} which contains the \texttt{FILE*} to write to is
+moved to \texttt{rsi}.
+After the call the final result being the number of lines read kept in
+\texttt{r14} is moved to register \texttt{rax}, and it fall through to
+\texttt{done}.
+
+
+
+
+
+
+% Explain which challenges you encountered and what you did to overcome them.
+\t{Challenges} -
+Task 3 shed the light on the missing nr. 127 character of \texttt{grabline}. I
+ventured back to task 2 to make task 3 work (see \ref{chl}).
+
+% Explain how you have tested your code (or why you haven’t tested it).
+\t{Tests} - I linked my assembly with \texttt{main\_reverse.c} in which I
+called \texttt{reverse\_file(FILE* inp, FILE* out)} passing it a text file to
+read from and a text file to write to, and then I used \texttt{lolcat} to write
+the text in the \texttt{out} file to \texttt{stdout}.
+One file was empty, one too long, one of more than one lines, and so on testing
+the requirements.
+
+

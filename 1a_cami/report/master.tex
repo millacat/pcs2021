@@ -1,0 +1,175 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsfonts,amssymb} % flere matematikkommandoer
+\usepackage{stmaryrd}
+\usepackage[margin=3cm, headheight=13.6pt]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[danish, english]{babel}
+\usepackage{xfrac}
+\usepackage{datetime}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\graphicspath{{pics/}{pics/nontermination/}{pics/plots/}{pics/maxflowmincut/}
+              {pics/ek/}{pics/rtf/}}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{dirtytalk}
+\usepackage{standalone}
+\usepackage{csquotes}
+\usepackage{fancyvrb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{todonotes}
+\usepackage{bussproofs}
+\EnableBpAbbreviations
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+    colorlinks,
+    allcolors=black
+}
+
+% lstlistings for code
+\lstset{
+  language=Python,
+  numbers=left,             % possible values are (none, left, right)
+  numbersep=15pt,           % how far the line-numbers are from the code
+  numberstyle=\tiny\color{pink!250},
+  frame=single,
+  escapeinside={\%*}{*)},   % add LaTeX within the code
+  keywordstyle=\color{purple}\bfseries\underbar,
+  backgroundcolor=\color{pink!20},
+  morekeywords={do, then, each, elseif}
+}
+
+% Lemma, Theorem, Corollary and Propositions counters
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+% Header
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\textit{PCS}}
+\chead{A1: Assembly}
+\rhead{DIKU, 2021}
+
+% Front page background KU picture
+\usepackage{eso-pic}
+\newcommand\BackgroundPic{%
+  \put(0,0){%
+      \parbox[b][\paperheight]{\paperwidth}{%
+          \vfill
+          \centering
+          \includegraphics[width=\paperwidth,height=\paperheight,%
+          keepaspectratio]{FRONTred.pdf}%
+          \vfill
+}}}
+
+\newcommand\re[1]{{\colorbox{red}{\textbf{#1}}}}
+%\newcommand\bl[1]{{\colorbox{blue}{\textbf{#1}}}}
+\newcommand\blu[1]{{\colorbox{blue}{\underline{\textbf{#1}}}}}
+\newcommand\g[1]{{\colorbox{green}{\textbf{#1}}}}
+\newcommand\gu[1]{{\colorbox{green}{\underline{\textbf{#1}}}}}
+\newcommand\y[1]{{\colorbox{yellow}{\textbf{#1}}}}
+\newcommand\yu[1]{{\colorbox{yellow}{\underline{\textbf{#1}}}}}
+\newcommand\pink[1]{{\colorbox{magenta}{\textbf{#1}}}}
+\newcommand\p[1]{{\colorbox{purple}{\textbf{#1}}}}
+\newcommand\pu[1]{{\colorbox{purple}{\underline{\textbf{#1}}}}}
+\newcommand\te[1]{{\texttt{#1}}}
+\newcommand\cm[1]{{\color{red}{\textbf{#1}}}}
+\newcommand{\li}{\vspace{8px}\\}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\arrowe}[1]{\overset{\displaystyle\mathcal{E}_{#1}}\downarrow}
+\newcommand{\e}[1]{\displaystyle\mathcal{E}_{#1}}
+\renewcommand{\S}[1]{\displaystyle\mathcal{S}_{#1}}
+\newcommand{\C}[1]{\displaystyle\mathcal{C}_{#1}}
+\renewcommand{\P}[1]{\displaystyle\mathcal{P}_{#1}}
+\newcommand{\T}[1]{\displaystyle\mathcal{T}_{#1}}
+\renewcommand{\L}[1]{\displaystyle\mathcal{L}_{#1}}
+\newcommand{\W}[1]{\displaystyle\mathcal{W}_{#1}}
+\newcommand{\V}[1]{\displaystyle\mathcal{V}_{#1}}
+\renewcommand{\SS}[1]{\displaystyle\mathcal{SS}_{#1}}
+\renewcommand{\aa}{\displaystyle\mathcal{A}}
+\newcommand{\bb}{\displaystyle\mathcal{B}}
+\newcommand{\cc}{\displaystyle\mathcal{C}}
+\newcommand{\llrs}[1]{\displaystyle\llbracket#1\rrbracket}
+\newcommand{\lb}[1]{\displaystyle\llbracket#1\rrbracket}
+\newcommand{\low}[1]{{\fontsize{9}{0}\selectfont\uppercase{#1}}}
+\newcommand{\lo}[1]{{\fontsize{9}{0}\selectfont\uppercase{#1}}}
+
+\newcommand{\ob}[2]{\overbrace{\displaystyle #2}^{(#1)}}
+\newcommand{\ub}[2]{\underbrace{\displaystyle #2}_{(#1)}}
+
+\newcommand{\case}{$\bullet$ Case $\e{}$ =}
+\newcommand{\cass}{$\bullet$ Case $\S{}$ =}
+\newcommand{\rai}{\t{raise }e}
+
+\renewcommand{\b}[1]{\{#1\}}
+\newcommand\bdag{{\color{blue}\dag}}
+\newcommand{\bl}[1]{\color{blue}\{#1\}}
+
+\renewcommand{\t}[1]{\textbf{#1}}
+\newcommand{\da}{\downarrow}
+\newcommand{\Da}{\Downarrow}
+\newcommand{\toa}{\to^*}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\squ}{\rightsquigarrow}
+\newcommand{\sqs}{\sqsupseteq}
+\newcommand{\ol}{\overline}
+\newcommand{\ti}{\times}
+\newcommand{\<}{\langle}
+\renewcommand{\>}{\rangle}
+\newcommand{\si}{\sigma}
+\newcommand{\s}{\sigma}
+\newcommand{\G}{\Gamma}
+\newcommand{\vd}{\vdash}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+
+\newcommand{\ifthen}{\textbf{if~}b~\textbf{then}~c_0~\textbf{else}~c_1}
+\newcommand{\ifa}[3]{\textbf{if~}#1~\textbf{then}~#2~\textbf{else}~#3}
+\newcommand{\while}{\textbf{while}~b~\t{do}~c_0}
+\newcommand{\whilea}[2]{\textbf{while}~#1~\t{do}~#2}
+\newcommand{\seq}{c_0;c_1}
+
+\makeatletter
+\def\input@path{{sections/}{appendix/}}
+\makeatother
+
+%\usepackage{apacite}
+
+\title{\texttt{\huge{Proactive Computer Security}\\
+               \LARGE{A1: Assembly}}\\ \vspace{5px}
+               \large{Department of Computer Science (DIKU)\\
+                      University of Copenhagen}\\}
+\author{C. K. Dalsgaard - \textit{rnq851}}
+\date{\today}
+
+\begin{document}
+
+%\AddToShipoutPicture*{\BackgroundPic}
+\maketitle
+%\setcounter{tocdepth}{2} %subsubsections is not shown in table of contents
+%\tableofcontents
+%\lstlistoflistings
+%\listoftodos
+
+\input{1}
+%\input{1_2}
+%\input{2_1}
+%\input{2_2}
+%\input{3_1}
+%\input{3_2}
+
+%appendiks
+%\printbibliography
+%\bibliographystyle{apacite}
+%\bibliographystyle{vancouver}
+%\bibliography{literature}
+
+\end{document}
+
